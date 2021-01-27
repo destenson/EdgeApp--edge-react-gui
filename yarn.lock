@@ -3709,9 +3709,9 @@ bs58check@2.1.2, bs58check@<3.0.0, bs58check@^1.0.8, bs58check@^2.1.1, bs58check
     create-hash "^1.1.0"
     safe-buffer "^5.1.2"
 
-"bs58grscheck@git+https://github.com/Groestlcoin/bs58grscheck.git":
+"bs58grscheck@https://github.com/Groestlcoin/bs58grscheck":
   version "2.1.2"
-  resolved "git+https://github.com/Groestlcoin/bs58grscheck.git#8ff31333a7626161c1484b461c20710bb9f97b93"
+  resolved "https://github.com/Groestlcoin/bs58grscheck#8ff31333a7626161c1484b461c20710bb9f97b93"
   dependencies:
     bs58 "^4.0.0"
     create-hash "^1.1.0"
