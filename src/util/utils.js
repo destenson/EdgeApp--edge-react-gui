@@ -9,8 +9,8 @@ import SafariView from 'react-native-safari-view'
 import { FIAT_CODES_SYMBOLS, getSymbolFromCurrency } from '../constants/indexConstants.js'
 import { FEE_ALERT_THRESHOLD, FEE_COLOR_THRESHOLD } from '../constants/WalletAndCurrencyConstants'
 import type { ExchangeRatesState } from '../modules/ExchangeRates/reducer'
-import { emptyEdgeDenomination, getDisplayDenomination } from '../modules/Settings/selectors.js'
-import { convertCurrency, convertCurrencyFromExchangeRates, getExchangeDenomination } from '../modules/UI/selectors.js'
+import { emptyEdgeDenomination } from '../modules/Settings/selectors.js'
+import { convertCurrency, convertCurrencyFromExchangeRates } from '../modules/UI/selectors.js'
 import { type RootState } from '../types/reduxTypes.js'
 import type { CustomTokenInfo, ExchangeData, GuiDenomination, GuiWallet, TransactionListTx } from '../types/types.js'
 
@@ -664,12 +664,12 @@ export const calculateFiatNetworkFee = (
 }
 
 export const calculateTransactionFee = (
-  state: RootState,
   guiWallet: GuiWallet,
-  currencyCode: string
+  currencyCode: string,
+  exchangeRates: ExchangeRatesState,
+  transaction: EdgeTransaction | null,
+  settings: any
 ): { fiatSymbol?: string, fiatAmount: string, fiatStyle?: string, cryptoSymbol?: string, cryptoAmount: string } => {
-  const { exchangeRates } = state
-  const { transaction } = state.ui.scenes.sendConfirmation
   const { fiatCurrencyCode, isoFiatCurrencyCode } = guiWallet
   const secondaryDisplayDenomination = getDenomFromIsoCode(fiatCurrencyCode)
 
@@ -684,8 +684,9 @@ export const calculateTransactionFee = (
     }
   } else if (parentNetworkFee && bns.gt(parentNetworkFee, '0')) {
     // if parentNetworkFee greater than zero
-    const parentDisplayDenomination = getDisplayDenomination(state, guiWallet.currencyCode)
-    const parentExchangeDenomination = getExchangeDenomination(state, guiWallet.currencyCode)
+    // This fetch denominations are wrong as it does not check the custom tokens
+    const parentDisplayDenomination = getDenomination(currencyCode, settings)
+    const parentExchangeDenomination = getDefaultDenomination(currencyCode, settings)
     const cryptoFeeSymbol = parentDisplayDenomination && parentDisplayDenomination.symbol ? parentDisplayDenomination.symbol : ''
     const displayMultiplier = parentDisplayDenomination ? parentDisplayDenomination.multiplier : ''
     const exchangeMultiplier = parentExchangeDenomination ? parentExchangeDenomination.multiplier : ''
@@ -700,8 +701,9 @@ export const calculateTransactionFee = (
     }
   } else if (networkFee && bns.gt(networkFee, '0')) {
     // if networkFee greater than zero
-    const primaryDisplayDenomination = getDisplayDenomination(state, currencyCode)
-    const primaryExchangeDenomination = getExchangeDenomination(state, currencyCode)
+    // This fetch denominations are wrong as it does not check the custom tokens
+    const primaryDisplayDenomination = getDenomination(currencyCode, settings)
+    const primaryExchangeDenomination = getDefaultDenomination(currencyCode, settings)
     const cryptoFeeSymbol = primaryDisplayDenomination && primaryDisplayDenomination.symbol ? primaryDisplayDenomination.symbol : ''
     const displayMultiplier = primaryDisplayDenomination ? primaryDisplayDenomination.multiplier : ''
     const exchangeMultiplier = primaryExchangeDenomination ? primaryExchangeDenomination.multiplier : ''
