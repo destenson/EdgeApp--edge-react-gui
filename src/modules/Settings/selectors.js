@@ -34,26 +34,38 @@ export const getLoginStatus = (state: RootState): boolean | null => {
 
 export const getCurrencySettings = (state: RootState, currencyCode: string): CurrencySetting => {
   const settings = getSettings(state)
-  const currencySettings = settings[currencyCode] || isoFiatDenominations[currencyCode]
+  const currencySettings = settings[currencyCode.toUpperCase()] || isoFiatDenominations[currencyCode.toUpperCase()]
   return currencySettings
 }
 
 export const getCryptocurrencySettings = (state: RootState, currencyCode: string) => {
   const settings = getSettings(state)
-  const currencySettings = settings[currencyCode]
+  const currencySettings = settings[currencyCode.toUpperCase()]
   return currencySettings
+}
+
+export const getMultiplierFromSettings = (state: RootState, currencyCode: string) => {
+  const settings = getSettings(state)
+  return settings[currencyCode.toUpperCase()].denomination
 }
 
 export const getDenominations = (state: RootState, currencyCode: string): EdgeDenomination[] => {
   const currencySettings = getCurrencySettings(state, currencyCode)
-  if (currencySettings == null || currencySettings.denominations == null) return [emptyEdgeDenomination]
+  if (currencySettings == null || currencySettings.denominations == null)
+    return [
+      {
+        name: '',
+        multiplier: getMultiplierFromSettings(state, currencyCode),
+        symbol: ''
+      }
+    ]
   const denominations = currencySettings.denominations
   return denominations
 }
 
 export const getDisplayDenominationKey = (state: RootState, currencyCode: string) => {
   const settings = getSettings(state)
-  const currencySettings = settings[currencyCode]
+  const currencySettings = settings[currencyCode.toUpperCase()]
   const selectedDenominationKey = currencySettings ? currencySettings.denomination : '1'
   return selectedDenominationKey
 }
