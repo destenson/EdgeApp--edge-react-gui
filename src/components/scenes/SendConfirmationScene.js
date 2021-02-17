@@ -23,6 +23,7 @@ import { Slider } from '../../modules/UI/components/Slider/Slider.ui.js'
 import { type AuthType, getSpendInfoWithoutState } from '../../modules/UI/scenes/SendConfirmation/selectors'
 import { convertCurrencyFromExchangeRates } from '../../modules/UI/selectors.js'
 import { type GuiMakeSpendInfo, type SendConfirmationState } from '../../reducers/scenes/SendConfirmationReducer.js'
+import type { CurrencySetting } from '../../reducers/scenes/SettingsReducer'
 import { THEME } from '../../theme/variables/airbitz.js'
 import type { GuiCurrencyInfo, GuiDenomination, GuiWallet } from '../../types/types.js'
 import { scale } from '../../util/scaling.js'
@@ -38,6 +39,7 @@ const DIVIDE_PRECISION = 18
 export type SendConfirmationStateProps = {
   fiatCurrencyCode: string,
   currencyInfo: EdgeCurrencyInfo | null,
+  currencySettings: CurrencySetting,
   currencyCode: string,
   nativeAmount: string,
   parentNetworkFee: string | null,
@@ -167,7 +169,14 @@ export class SendConfirmation extends React.Component<Props, State> {
   render() {
     const secondaryDisplayDenomination = getDenomFromIsoCode(this.props.fiatCurrencyCode)
 
-    const { networkFee, parentNetworkFee, guiWallet, nativeAmount, errorMsg } = this.props
+    const { networkFee, parentNetworkFee, guiWallet, nativeAmount, currencySettings, errorMsg } = this.props
+
+    let networkFeeOption = 'standard'
+    // Set default fee
+    if (!(currencySettings?.defaultFee == null && currencySettings == null)) networkFeeOption = currencySettings?.defaultFee
+    else if (networkFeeOption == null) networkFeeOption = 'standard'
+    const capitalizeFeeOption = networkFeeOption => networkFeeOption.toString()[0].toUpperCase() + networkFeeOption.substr(1).toLowerCase()
+
     const primaryInfo: GuiCurrencyInfo = {
       displayCurrencyCode: this.props.currencyCode,
       displayDenomination: this.props.primaryDisplayDenomination,
@@ -265,10 +274,9 @@ export class SendConfirmation extends React.Component<Props, State> {
               <Scene.Padding style={{ paddingHorizontal: 54 }}>
                 <Scene.Item style={{ alignItems: 'center', flex: -1 }}>
                   <Scene.Row style={{ paddingVertical: 4 }}>
-                    <Text style={[styles.feeAreaText, { color: networkFeeData.feeColor }]}>
-                      {networkFeeData.feeSyntax} Standard Fee {}
-                    </Text>
+                    <Text style={[styles.feeAreaText, { color: networkFeeData.feeColor }]}>{networkFeeData.feeSyntax}</Text>
                   </Scene.Row>
+                  <Text style={[styles.feeAreaText, { color: networkFeeData.feeColor }]}>{capitalizeFeeOption(networkFeeOption)} Fee</Text>
 
                   {!!destination && (
                     <Scene.Row style={{ paddingVertical: 10 }}>
