@@ -107,9 +107,6 @@ export class ChangeMiningFee extends React.Component<Props, State> {
     return (
       // Add checkbox
       <SceneWrapper background="body" hasTabs={false} avoidKeyboard>
-        {/* <View>
-          <Text>Set Default Fee for {this.state.currencyCode}</Text>
-        </View> */}
         <ScrollView style={styles.content}>
           {this.renderRadioRow('high', s.strings.mining_fee_high_label_choice)}
           {this.renderRadioRow('standard', s.strings.mining_fee_standard_label_choice)}
@@ -119,8 +116,8 @@ export class ChangeMiningFee extends React.Component<Props, State> {
           {this.renderFeeWarning()}
 
           <View>
-            <View>
-              <Text style={styles.paddingLeftIcon}>Set default for future transactions</Text>
+            <View style={styles.row}>
+              <Text style={styles.paddingLeftIcon}>Make Default Setting</Text>
               <View style={styles.paddingRightIcon}>
                 <TouchableWithoutFeedback>
                   <Switch value={this.state.setDefault} onChange={() => this.toggleDefaultFee()} />
@@ -234,11 +231,16 @@ const rawStyles = {
     flexDirection: 'column',
     justifyContent: 'space-between'
   },
+  row: {
+    alignItems: 'center',
+    flexDirection: 'row',
+    justifyContent: 'flex-start'
+  },
   paddingRightIcon: {
-    paddingLeft: THEME.rem(0.75)
+    paddingLeft: '5%'
   },
   paddingLeftIcon: {
-    paddingRight: THEME.rem(0.75)
+    // paddingRight: '100%'
   },
 
   saveButton: {
